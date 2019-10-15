@@ -1,2 +1,5 @@
+target
+/tasks/target
+/project/tasks/target
 *.class
 *.log
