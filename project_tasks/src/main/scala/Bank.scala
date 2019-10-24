@@ -27,8 +27,7 @@ class Bank(val allowedAttempts: Integer = 3) {
                     this.processedTransactions.push(next)
                 }
                 case noSufficientFunds: NoSufficientFundsException => {
-                    next.attempt -= 1
-                    if (next.attempt == 0) {
+                    if (next.attempt == next.allowedAttempts) {
                         next.status = TransactionStatus.FAILED
                     }
                     else {
@@ -36,6 +35,7 @@ class Bank(val allowedAttempts: Integer = 3) {
                     }
                 }
             } finally {
+                next.attempt += 1
                 if (next.status != TransactionStatus.PENDING) {
                     this.processedTransactions.push(next)
                 }  
