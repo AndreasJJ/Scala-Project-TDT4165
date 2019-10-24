@@ -1,9 +1,10 @@
 object Array extends App {
 	// The cool way to make an array with elements 1 to 50
-	val array = (for(i <- 1 to 50) yield i).toArray;
-	// The cool way to make an array with elements 1 to 50
-	//val array = new Array[Int](50)
-	//for(i <- 0 until 50) {array(i) = i+1}
+	//val array = (for(i <- 1 to 50) yield i).toArray;
+	
+	// The not cool way to make an array with elements 1 to 50
+	val array = new Array[Int](50)
+	for(i <- 0 until 50) {array(i) = i+1}
 	
 	// Function that returns the sum of an array with the help of a for loop
 	val sum = (array : Array[Int]) => {
