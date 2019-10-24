@@ -14,7 +14,7 @@ class TransactionQueue {
 
     // Remove and return the first element from the queue
     def pop: Transaction = this.synchronized {
-      this.queue.dequeue()
+      this.queue.dequeue
     }
 
     // Return whether the queue is empty
@@ -53,18 +53,30 @@ class Transaction(val transactionsQueue: TransactionQueue,
       def doTransaction() = {
           // TODO - project task 3
           // Extend this method to satisfy requirements.
-          from withdraw amount
-          to deposit amount
+          // from withdraw amount
+          // to deposit amount
+            from.withdraw(amount) match {
+              case Right(string) => throw new IllegalAmountException()
+              case Left(x) => 
+            }
+            to.deposit(amount) match {
+              case Right(string) => throw new IllegalAmountException()
+              case Left(x) => 
+            }
       }
-
       // TODO - project task 3
       // make the code below thread safe
       if (status == TransactionStatus.PENDING) {
-          doTransaction
+        from.synchronized {
+          to.synchronized {
+            doTransaction
+          }
+        }
+        //this.synchronized {
+        //  doTransaction
+        //}
           Thread.sleep(50) // you might want this to make more room for
                            // new transactions to be added to the queue
       }
-
-
     }
 }

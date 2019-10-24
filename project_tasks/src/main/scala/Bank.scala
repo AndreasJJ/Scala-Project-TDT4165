@@ -6,8 +6,8 @@ class Bank(val allowedAttempts: Integer = 3) {
     private val processedTransactions: TransactionQueue = new TransactionQueue()
 
     def addTransactionToQueue(from: Account, to: Account, amount: Double): Unit = {
-        var transaction = new Transaction(transactionsQueue, processedTransactions, from, to, amount, 1)
-        this.processedTransactions.push(transaction)
+        var transaction = new Transaction(transactionsQueue, processedTransactions, from, to, amount, allowedAttempts)
+        this.transactionsQueue.push(transaction)
         this.processTransactions
     }
                                                 // TODO
@@ -24,18 +24,17 @@ class Bank(val allowedAttempts: Integer = 3) {
             } catch {
                 case illegalAmount: IllegalAmountException => {
                     next.status = TransactionStatus.FAILED
-                    this.processedTransactions.push(next)
                 }
                 case noSufficientFunds: NoSufficientFundsException => {
+                    next.attempt += 1
                     if (next.attempt == next.allowedAttempts) {
                         next.status = TransactionStatus.FAILED
-                    }
+                    } 
                     else {
                         this.transactionsQueue.push(next)
                     }
                 }
             } finally {
-                next.attempt += 1
                 if (next.status != TransactionStatus.PENDING) {
                     this.processedTransactions.push(next)
                 }  

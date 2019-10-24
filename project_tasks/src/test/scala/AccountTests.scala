@@ -82,7 +82,7 @@ class AccountTransferTests extends FunSuite {
     val acc2 = bank.addAccount(200)
 
     acc1 transferTo(acc2, 50)
-
+    
     while (bank.getProcessedTransactionsAsList.size != 1) {
       Thread.sleep(100)
     }
