@@ -18,13 +18,11 @@ class TransactionQueue {
     }
 
     // Return whether the queue is empty
-    def isEmpty: Boolean = this.synchronized {
-      this.queue.isEmpty
-    }
+    def isEmpty: Boolean = this.queue.isEmpty
 
     // Add new element to the back of the queue
     def push(t: Transaction): Unit = this.synchronized {
-      this.queue += t
+      this.queue.enqueue(t)
     }
 
     // Return the first element from the queue without removing it
@@ -56,7 +54,13 @@ class Transaction(val transactionsQueue: TransactionQueue,
           // from withdraw amount
           // to deposit amount
             from.withdraw(amount) match {
-              case Right(string) => throw new IllegalAmountException()
+              case Right(string) => {
+                if(string == "Not enough funds to withdraw amount") {
+                  throw new NoSufficientFundsException()
+                } else {
+                  throw new IllegalAmountException()
+                }
+              }
               case Left(x) => 
             }
             to.deposit(amount) match {
@@ -67,15 +71,21 @@ class Transaction(val transactionsQueue: TransactionQueue,
       // TODO - project task 3
       // make the code below thread safe
       if (status == TransactionStatus.PENDING) {
-        from.synchronized {
+        if (from.uid < to.uid) {
+          from.synchronized {
+            to.synchronized {
+              doTransaction
+            }
+          } 
+        }
+        else {
           to.synchronized {
-            doTransaction
+            from.synchronized {
+              doTransaction
+            }
           }
         }
-        //this.synchronized {
-        //  doTransaction
-        //}
-          Thread.sleep(50) // you might want this to make more room for
+        Thread.sleep(50) // you might want this to make more room for
                            // new transactions to be added to the queue
       }
     }

@@ -4,6 +4,7 @@ class Bank(val allowedAttempts: Integer = 3) {
 
     private val transactionsQueue: TransactionQueue = new TransactionQueue()
     private val processedTransactions: TransactionQueue = new TransactionQueue()
+    private var uidCounter = 0
 
     def addTransactionToQueue(from: Account, to: Account, amount: Double): Unit = {
         var transaction = new Transaction(transactionsQueue, processedTransactions, from, to, amount, allowedAttempts)
@@ -16,6 +17,13 @@ class Bank(val allowedAttempts: Integer = 3) {
                                                 // spawn a thread that calls processTransactions
 
     private def processTransactions: Unit = {
+        // **************************
+        // TODO: Sometimes transactionsQueue.pop fails because the queue is empty
+        // because another thread has poped the queue after we used isEmpty
+        // so for now i synchronized transactionsQueue but is this inefficient?
+        // is there a better way to do it??????
+        // **************************
+        transactionsQueue.synchronized {
         if(!transactionsQueue.isEmpty) {
             var next = transactionsQueue.pop
             try {
@@ -27,7 +35,7 @@ class Bank(val allowedAttempts: Integer = 3) {
                 }
                 case noSufficientFunds: NoSufficientFundsException => {
                     next.attempt += 1
-                    if (next.attempt == next.allowedAttempts) {
+                    if (next.attempt >= next.allowedAttempts) {
                         next.status = TransactionStatus.FAILED
                     } 
                     else {
@@ -40,6 +48,7 @@ class Bank(val allowedAttempts: Integer = 3) {
                 }  
             }
             this.processTransactions
+        }
         }
     }
                                                 // TOO
@@ -55,6 +64,11 @@ class Bank(val allowedAttempts: Integer = 3) {
 
     def getProcessedTransactionsAsList: List[Transaction] = {
         processedTransactions.iterator.toList
+    }
+
+    def generateUID: Int = this.synchronized {
+        uidCounter += 1
+        uidCounter
     }
 
 }

@@ -5,6 +5,7 @@ class Account(val bank: Bank, initialBalance: Double) {
     class Balance(var amount: Double) {}
 
     val balance = new Balance(initialBalance)
+    val uid = bank.generateUID
 
     // TODO
     // for project task 1.2: implement functions
