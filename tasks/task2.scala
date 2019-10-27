@@ -8,7 +8,7 @@ object Concurrency extends App {
 
 	private var counter: Int = 0
 
-    def increaseCounter(): Unit = {
+    def increaseCounter(): Unit = this.synchronized {
 		counter += 1
 	}
 
