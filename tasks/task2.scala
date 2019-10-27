@@ -8,7 +8,14 @@ object Concurrency extends App {
 
 	private var counter: Int = 0
 
-    def increaseCounter(): Unit = this.synchronized {
+    /*
+	// Old increaseCounter
+	def increaseCounter(): Unit = {
+		counter += 1
+	}
+	*/
+
+	def increaseCounter(): Unit = this.synchronized {
 		counter += 1
 	}
 
@@ -19,7 +26,7 @@ object Concurrency extends App {
 	val t1 = threadWrapper(increaseCounter)
 	val t2 = threadWrapper(increaseCounter)
 	val t3 = threadWrapper(printCounter)
-	
+
 	t1.start()
 	t2.start()
 	t3.start()

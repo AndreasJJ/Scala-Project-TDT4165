@@ -1,9 +1,5 @@
 1D)
-    The difference between Int and BigInt is that is that Int supports numbers as large as 2^31,
-    and BigInt supports numbers as large as 2^Int.MaxValue. Meaning Int can be from -2^31 to 2^31 and BigInt from
-    -2^Int.MaxValue to 2^Int.MaxValue. However these values are system/compiler dependent,
-    but BigInt must be bigger or equal to the Int size.
-    Therefore when you need to represent large numbers BigInt is often better.
+    The difference between Int and BigInt is that is that Int supports numbers as large as 2^31, and BigInt supports numbers as large as 2^Int.MaxValue. Meaning Int can be from -2^31 to 2^31 and BigInt from -2^Int.MaxValue to 2^Int.MaxValue. However these values are system/compiler dependent, but BigInt must be bigger or equal to the Int size. Therefore when you need to represent large numbers BigInt is often better.
 
 2b)
 	The phenomenon is called "race condition", it is problematic if you need the execution to be atomic. So f.ex. it could be very problematic in a bank situation where deposits and withdrawals could interleave with each other causing a user to lose or gain more money than they should.
