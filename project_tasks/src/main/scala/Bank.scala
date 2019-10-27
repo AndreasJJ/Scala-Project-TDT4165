@@ -1,15 +1,21 @@
 import exceptions.{IllegalAmountException, NoSufficientFundsException}
 
+import java.util.concurrent.ForkJoinPool
+
 class Bank(val allowedAttempts: Integer = 3) {
 
     private val transactionsQueue: TransactionQueue = new TransactionQueue()
     private val processedTransactions: TransactionQueue = new TransactionQueue()
     private var uidCounter = 0
+    private val executor = new ForkJoinPool
+
 
     def addTransactionToQueue(from: Account, to: Account, amount: Double): Unit = {
         var transaction = new Transaction(transactionsQueue, processedTransactions, from, to, amount, allowedAttempts)
         this.transactionsQueue.push(transaction)
-        this.processTransactions
+        executor.execute(new Runnable {
+            override def run(): Unit = processTransactions
+        })
     }
                                                 // TODO
                                                 // project task 2
@@ -23,33 +29,36 @@ class Bank(val allowedAttempts: Integer = 3) {
         // so for now i synchronized transactionsQueue but is this inefficient?
         // is there a better way to do it??????
         // **************************
-        transactionsQueue.synchronized {
-        if(!transactionsQueue.isEmpty) {
-            var next = transactionsQueue.pop
-            try {
-                next.run()
-                next.status = TransactionStatus.SUCCESS
-            } catch {
-                case illegalAmount: IllegalAmountException => {
-                    next.status = TransactionStatus.FAILED
-                }
-                case noSufficientFunds: NoSufficientFundsException => {
-                    next.attempt += 1
-                    if (next.attempt >= next.allowedAttempts) {
-                        next.status = TransactionStatus.FAILED
-                    } 
-                    else {
-                        this.transactionsQueue.push(next)
+            if(!transactionsQueue.isEmpty) {
+                scala.util.control.Exception.ignoring(classOf[Exception]) {
+                    var next = transactionsQueue.pop
+                    try {
+                        next.run()
+                        next.status = TransactionStatus.SUCCESS
+                    } catch {
+                        case illegalAmount: IllegalAmountException => {
+                            next.status = TransactionStatus.FAILED
+                        }
+                        case noSufficientFunds: NoSufficientFundsException => {
+                            next.attempt += 1
+                            if (next.attempt >= next.allowedAttempts) {
+                                next.status = TransactionStatus.FAILED
+                            } 
+                            else {
+                                this.transactionsQueue.push(next)
+                            }
+                        }
+                    } finally {
+                        if (next.status != TransactionStatus.PENDING) {
+                            this.processedTransactions.push(next)
+                        }  
                     }
+                    executor.execute(new Runnable {
+                        override def run(): Unit = processTransactions
+                    })
                 }
-            } finally {
-                if (next.status != TransactionStatus.PENDING) {
-                    this.processedTransactions.push(next)
-                }  
             }
-            this.processTransactions
-        }
-        }
+        
     }
                                                 // TOO
                                                 // project task 2

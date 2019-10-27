@@ -154,7 +154,7 @@ class AccountTransferTests extends FunSuite {
   test("Test 11: Failed transactions should retry and potentially succeed with multiple allowed attempts") {
     var failed = 0
     for (x <- 1 to 100) {
-      println(x)
+
       val bank = new Bank(allowedAttempts = 3)
 
       val acc1 = new Account(bank, 100)
@@ -167,9 +167,7 @@ class AccountTransferTests extends FunSuite {
       while (bank.getProcessedTransactionsAsList.size != 8) {
         Thread.sleep(100)
       }
-      println("acc1 ", acc1.getBalanceAmount)
-      println("acc2 ", acc2.getBalanceAmount)
-      println("acc3 ", acc3.getBalanceAmount)
+
       if (!(acc1.getBalanceAmount == 0
         && acc2.getBalanceAmount == 300
         && acc3.getBalanceAmount == 0)) failed += 1
