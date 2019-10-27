@@ -35,35 +35,41 @@ class Bank(val allowedAttempts: Integer = 3) {
         // so for now i synchronized transactionsQueue but is this inefficient?
         // is there a better way to do it??????
         // **************************
-            if(!transactionsQueue.isEmpty) {
-                scala.util.control.Exception.ignoring(classOf[NoSuchElementException]) {
-                    var next = transactionsQueue.pop
-                    try {
-                        next.run()
-                        next.status = TransactionStatus.SUCCESS
-                    } catch {
-                        case illegalAmount: IllegalAmountException => {
-                            next.status = TransactionStatus.FAILED
-                        }
-                        case noSufficientFunds: NoSufficientFundsException => {
-                            next.attempt += 1
-                            if (next.attempt >= next.allowedAttempts) {
-                                next.status = TransactionStatus.FAILED
-                            } 
-                            else {
-                                this.transactionsQueue.push(next)
-                            }
-                        }
-                    } finally {
-                        if (next.status != TransactionStatus.PENDING) {
-                            this.processedTransactions.push(next)
-                        }  
-                    }
-                    executor.execute(new Runnable {
-                        override def run(): Unit = processTransactions
-                    })
-                }
+        var isEmpty: Boolean = false
+        var next: Transaction = null
+        transactionsQueue.synchronized {
+            isEmpty = transactionsQueue.isEmpty
+            if(!isEmpty) {
+                next = transactionsQueue.pop;
             }
+        }
+
+        if(!isEmpty) {
+            try {
+                next.run()
+                next.status = TransactionStatus.SUCCESS
+            } catch {
+                case illegalAmount: IllegalAmountException => {
+                    next.status = TransactionStatus.FAILED
+                }
+                case noSufficientFunds: NoSufficientFundsException => {
+                    next.attempt += 1
+                    if (next.attempt >= next.allowedAttempts) {
+                        next.status = TransactionStatus.FAILED
+                    } 
+                    else {
+                        this.transactionsQueue.push(next)
+                    }
+                }
+            } finally {
+                if (next.status != TransactionStatus.PENDING) {
+                    this.processedTransactions.push(next)
+                }  
+            }
+            executor.execute(new Runnable {
+                override def run(): Unit = processTransactions
+            })
+        }
         
     }
 
