@@ -20,7 +20,7 @@ object Concurrency extends App {
 	}
 
 	def printCounter(): Unit = {
-		println(counter)
+		println("counter " + counter)
 	}
 
 	val t1 = threadWrapper(increaseCounter)
