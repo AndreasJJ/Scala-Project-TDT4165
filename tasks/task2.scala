@@ -26,8 +26,20 @@ object Concurrency extends App {
 	val t1 = threadWrapper(increaseCounter)
 	val t2 = threadWrapper(increaseCounter)
 	val t3 = threadWrapper(printCounter)
-
 	t1.start()
 	t2.start()
 	t3.start()
+
+	// Joins ensure deadlock does not interfere with above code
+	t1.join()
+	t2.join()
+	t3.join()
+
+	object Alpha {lazy val x: Int = Beta.y}
+	object Beta {lazy val y: Int = Alpha.x}
+
+	val ta = threadWrapper(Alpha.x)
+	val tb = threadWrapper(Beta.y)
+	ta.start()
+	tb.start()
 }
