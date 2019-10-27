@@ -3,3 +3,6 @@
 
 2b)
 	The phenomenon is called "race condition", it is problematic if you need the execution to be atomic. So f.ex. it could be very problematic in a bank situation where deposits and withdrawals could interleave with each other causing a user to lose or gain more money than they should.
+
+2d)
+	A deadlock is a situation where two or more executions wait for each other to complete an action before proceeding with their own action. The reason why they wait is because each execution obtains an exlusive access to a resource that the other execution needs to proceed. It can be prevented by establishing a total order between resources when aquiring them. Thus it ensures that no set of threads can cyclically wait on the resources they previously acquired.
