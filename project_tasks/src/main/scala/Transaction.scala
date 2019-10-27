@@ -18,7 +18,9 @@ class TransactionQueue {
     }
 
     // Return whether the queue is empty
-    def isEmpty: Boolean = this.queue.isEmpty
+    def isEmpty: Boolean = this.synchronized {
+      this.queue.isEmpty
+    }
 
     // Add new element to the back of the queue
     def push(t: Transaction): Unit = this.synchronized {
