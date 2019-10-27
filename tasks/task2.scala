@@ -16,7 +16,11 @@ object Concurrency extends App {
 		println(counter)
 	}
 
-	threadWrapper(increaseCounter).start()
-	threadWrapper(increaseCounter).start()
-	threadWrapper(printCounter).start()
+	val t1 = threadWrapper(increaseCounter)
+	val t2 = threadWrapper(increaseCounter)
+	val t3 = threadWrapper(printCounter)
+	
+	t1.start()
+	t2.start()
+	t3.start()
 }
