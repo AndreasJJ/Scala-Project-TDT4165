@@ -10,6 +10,10 @@ class Bank(val allowedAttempts: Integer = 3) {
     private val executor = new ForkJoinPool
 
 
+    // TODO
+    // project task 2
+    // create a new transaction object and put it in the queue
+    // spawn a thread that calls processTransactions
     def addTransactionToQueue(from: Account, to: Account, amount: Double): Unit = {
         var transaction = new Transaction(transactionsQueue, processedTransactions, from, to, amount, allowedAttempts)
         this.transactionsQueue.push(transaction)
@@ -17,11 +21,13 @@ class Bank(val allowedAttempts: Integer = 3) {
             override def run(): Unit = processTransactions
         })
     }
-                                                // TODO
-                                                // project task 2
-                                                // create a new transaction object and put it in the queue
-                                                // spawn a thread that calls processTransactions
 
+    // TODO
+    // project task 2
+    // Function that pops a transaction from the queue
+    // and spawns a thread to execute the transaction.
+    // Finally do the appropriate thing, depending on whether
+    // the transaction succeeded or not
     private def processTransactions: Unit = {
         // **************************
         // TODO: Sometimes transactionsQueue.pop fails because the queue is empty
@@ -30,7 +36,7 @@ class Bank(val allowedAttempts: Integer = 3) {
         // is there a better way to do it??????
         // **************************
             if(!transactionsQueue.isEmpty) {
-                scala.util.control.Exception.ignoring(classOf[Exception]) {
+                scala.util.control.Exception.ignoring(classOf[NoSuchElementException]) {
                     var next = transactionsQueue.pop
                     try {
                         next.run()
@@ -60,12 +66,6 @@ class Bank(val allowedAttempts: Integer = 3) {
             }
         
     }
-                                                // TOO
-                                                // project task 2
-                                                // Function that pops a transaction from the queue
-                                                // and spawns a thread to execute the transaction.
-                                                // Finally do the appropriate thing, depending on whether
-                                                // the transaction succeeded or not
 
     def addAccount(initialBalance: Double): Account = {
         new Account(this, initialBalance)
