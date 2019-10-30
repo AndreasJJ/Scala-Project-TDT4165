@@ -45,27 +45,16 @@ class Bank(val allowedAttempts: Integer = 3) {
         }
 
         if(!isEmpty) {
-            try {
-                transaction.run()
-                transaction.status = TransactionStatus.SUCCESS
-            } catch {
-                case illegalAmount: IllegalAmountException => {
-                    transaction.status = TransactionStatus.FAILED
-                }
-                case noSufficientFunds: NoSufficientFundsException => {
-                    transaction.attempt += 1
-                    if (transaction.attempt >= transaction.allowedAttempts) {
-                        transaction.status = TransactionStatus.FAILED
-                    } 
-                    else {
-                        this.transactionsQueue.push(transaction)
-                    }
-                }
-            } finally {
-                if (transaction.status != TransactionStatus.PENDING) {
-                    this.processedTransactions.push(transaction)
-                }  
+            transaction.run()
+
+            if(transaction.status == TransactionStatus.FAILED ||
+               transaction.status == TransactionStatus.SUCCESS) 
+            {
+                this.processedTransactions.push(transaction)
+            } else {
+                this.transactionsQueue.push(transaction)
             }
+            
             executor.execute(new Runnable {
                 override def run(): Unit = processTransactions
             })

@@ -55,20 +55,26 @@ class Transaction(val transactionsQueue: TransactionQueue,
         // Extend this method to satisfy requirements.
         // from withdraw amount
         // to deposit amount
-          from.withdraw(amount) match {
-            case Right(string) => {
-              if(string == "Not enough funds to withdraw amount") {
-                throw new NoSufficientFundsException()
-              } else {
-                throw new IllegalAmountException()
-              }
+        var failed  = true
+        from.withdraw(amount) match {
+          case Right(string) => failed = true
+          case Left(x) => {
+            to.deposit(amount) match {
+              case Right(string) => failed = true
+              case Left(x) => failed = false
             }
-            case Left(x) => 
           }
-          to.deposit(amount) match {
-            case Right(string) => throw new IllegalAmountException()
-            case Left(x) => 
-          }
+        }
+        
+
+        if(failed) {
+          attempt += 1
+          if (attempt >= allowedAttempts) {
+              status = TransactionStatus.FAILED
+          } 
+        } else {
+          status = TransactionStatus.SUCCESS
+        }
     }
     // TODO - project task 3
     // make the code below thread safe
