@@ -15,7 +15,7 @@ class Bank(val allowedAttempts: Integer = 3) {
     // create a new transaction object and put it in the queue
     // spawn a thread that calls processTransactions
     def addTransactionToQueue(from: Account, to: Account, amount: Double): Unit = {
-        var transaction = new Transaction(transactionsQueue, processedTransactions, from, to, amount, allowedAttempts)
+        val transaction = new Transaction(transactionsQueue, processedTransactions, from, to, amount, allowedAttempts)
         this.transactionsQueue.push(transaction)
         executor.execute(new Runnable {
             override def run(): Unit = processTransactions
@@ -62,6 +62,7 @@ class Bank(val allowedAttempts: Integer = 3) {
                     }
                 }
             } finally {
+                // if the transaction either failed or succeeded, 
                 if (transaction.status != TransactionStatus.PENDING) {
                     this.processedTransactions.push(transaction)
                 }  

@@ -10,7 +10,7 @@ class TransactionQueue {
     // TODO
     // project task 1.1
     // Add datastructure to contain the transactions
-    var queue = mutable.Queue[Transaction]()
+    val queue = mutable.Queue[Transaction]()
 
     // Remove and return the first element from the queue
     def pop: Transaction = this.synchronized {

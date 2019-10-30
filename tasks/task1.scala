@@ -25,17 +25,15 @@ object Array extends App {
 		sum(array, 0)
 	}
 
-	// Method that returns the n'th fibonacci number
-	def fibRec(n : BigInt) : BigInt = {
-		def fib(n : BigInt, prevPrev : BigInt, prev : BigInt) : BigInt = {
-			if(n > 0) {
-				fib(n-1, prev, prevPrev+prev)
-			} else {
-				prevPrev+prev
-			}
+	// naive implementation
+	def fibRec(n:BigInt) : BigInt = {
+		if(n < 2) {
+			n
+		} else {
+			fibRec(n-1)+fibRec(n-2)
 		}
-		fib(n-2, 0, 1)
 	}
+	
 
 	// Prints to test the functions
 	println(array.mkString(" "))
