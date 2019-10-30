@@ -36,34 +36,34 @@ class Bank(val allowedAttempts: Integer = 3) {
         // is there a better way to do it??????
         // **************************
         var isEmpty: Boolean = false
-        var next: Transaction = null
+        var transaction: Transaction = null
         transactionsQueue.synchronized {
             isEmpty = transactionsQueue.isEmpty
             if(!isEmpty) {
-                next = transactionsQueue.pop;
+                transaction = transactionsQueue.pop;
             }
         }
 
         if(!isEmpty) {
             try {
-                next.run()
-                next.status = TransactionStatus.SUCCESS
+                transaction.run()
+                transaction.status = TransactionStatus.SUCCESS
             } catch {
                 case illegalAmount: IllegalAmountException => {
-                    next.status = TransactionStatus.FAILED
+                    transaction.status = TransactionStatus.FAILED
                 }
                 case noSufficientFunds: NoSufficientFundsException => {
-                    next.attempt += 1
-                    if (next.attempt >= next.allowedAttempts) {
-                        next.status = TransactionStatus.FAILED
+                    transaction.attempt += 1
+                    if (transaction.attempt >= transaction.allowedAttempts) {
+                        transaction.status = TransactionStatus.FAILED
                     } 
                     else {
-                        this.transactionsQueue.push(next)
+                        this.transactionsQueue.push(transaction)
                     }
                 }
             } finally {
-                if (next.status != TransactionStatus.PENDING) {
-                    this.processedTransactions.push(next)
+                if (transaction.status != TransactionStatus.PENDING) {
+                    this.processedTransactions.push(transaction)
                 }  
             }
             executor.execute(new Runnable {
