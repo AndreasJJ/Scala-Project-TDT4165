@@ -29,12 +29,6 @@ class Bank(val allowedAttempts: Integer = 3) {
     // Finally do the appropriate thing, depending on whether
     // the transaction succeeded or not
     private def processTransactions: Unit = {
-        // **************************
-        // TODO: Sometimes transactionsQueue.pop fails because the queue is empty
-        // because another thread has poped the queue after we used isEmpty
-        // so for now i synchronized transactionsQueue but is this inefficient?
-        // is there a better way to do it??????
-        // **************************
         var isEmpty: Boolean = false
         var transaction: Transaction = null
         transactionsQueue.synchronized {
