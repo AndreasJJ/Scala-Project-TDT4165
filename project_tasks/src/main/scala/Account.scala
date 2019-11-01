@@ -7,9 +7,6 @@ class Account(val bank: Bank, initialBalance: Double) {
     val balance = new Balance(initialBalance)
     val uid = bank.generateUID
 
-    // TODO
-    // for project task 1.2: implement functions
-    // for project task 1.3: change return type and update function bodies
     def withdraw(amount: Double): Either[Unit,String] = this.synchronized {
         if(amount <= 0) {
             Right("The amount should be more than 0")
@@ -21,6 +18,7 @@ class Account(val bank: Bank, initialBalance: Double) {
             Right("Not enough funds to withdraw amount")
         }
     }
+    
     def deposit (amount: Double): Either[Unit,String] = this.synchronized {
         if(amount <= 0) {
             Right("The amount should be more than 0")
@@ -29,6 +27,7 @@ class Account(val bank: Bank, initialBalance: Double) {
             Left((): Unit)
         }
     }
+
     def getBalanceAmount: Double = this.balance.amount
 
     def transferTo(account: Account, amount: Double) = {

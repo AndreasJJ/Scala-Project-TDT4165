@@ -9,11 +9,6 @@ class Bank(val allowedAttempts: Integer = 3) {
     private var uidCounter = 0
     private val executor = new ForkJoinPool
 
-
-    // TODO
-    // project task 2
-    // create a new transaction object and put it in the queue
-    // spawn a thread that calls processTransactions
     def addTransactionToQueue(from: Account, to: Account, amount: Double): Unit = {
         val transaction = new Transaction(transactionsQueue, processedTransactions, from, to, amount, allowedAttempts)
         this.transactionsQueue.push(transaction)
@@ -22,12 +17,6 @@ class Bank(val allowedAttempts: Integer = 3) {
         })
     }
 
-    // TODO
-    // project task 2
-    // Function that pops a transaction from the queue
-    // and spawns a thread to execute the transaction.
-    // Finally do the appropriate thing, depending on whether
-    // the transaction succeeded or not
     private def processTransactions: Unit = {
         var isEmpty: Boolean = false
         var transaction: Transaction = null
